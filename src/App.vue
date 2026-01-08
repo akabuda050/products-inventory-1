@@ -198,7 +198,7 @@ function toggleTag(tag){ const i = activeItem.value.tags.indexOf(tag); i!==-1?ac
 <div class="min-h-screen bg-gray-100 p-4">
 
   <!-- CATEGORIES -->
-  <div v-if="!activeCategory" class="grid grid-cols-3 sm:grid-cols-6 gap-4">
+  <div v-if="!activeCategory" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
     <button v-for="c in categories" :key="c.id" @click="activeCategory=c.id" class="p-5 bg-white rounded-xl shadow-lg flex flex-col items-center justify-center active:scale-95 transition">
       <div class="text-6xl mb-3">{{ c.icon }}</div>
       <div class="text-sm font-semibold line-clamp-2">{{ c.label }}</div>
@@ -211,7 +211,7 @@ function toggleTag(tag){ const i = activeItem.value.tags.indexOf(tag); i!==-1?ac
       <button class="text-lg font-semibold text-blue-600" @click="activeCategory=null">← Назад</button>
       <button class="px-4 py-2 bg-green-500 text-white rounded-2xl" @click="openAddModal">Додати продукт</button>
     </div>
-  <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+  <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
   <div v-for="item in inventory[activeCategory]" :key="item.name" class="relative flex flex-col items-center relative">
   <button @click="openItem(item)" class="flex flex-col items-center w-full justify-between p-3 rounded-2xl bg-white shadow-lg">
     <div class="text-6xl flex justify-center mt-2">{{ item.icon }}</div>
