@@ -3,20 +3,27 @@ import { ref, reactive } from 'vue'
 
 /* ===================== CATEGORIES ===================== */
 const categories = [
+  { id: 'bakery', label: 'Випічка', icon: '🥖' },
+  
+  { id: 'fruits', label: 'Фрукти', icon: '🍎' },
+  { id: 'vegetables', label: 'Овочі', icon: '🥦' },
+  
   { id: 'meat', label: 'М’ясо та м’ясні продукти', icon: '🥩' },
   { id: 'fish', label: 'Риба та морепродукти', icon: '🐟' },
+  
   { id: 'eggs', label: 'Яйця', icon: '🥚' },
+  
   { id: 'dairy', label: 'Молочні продукти', icon: '🥛' },
-  { id: 'vegetables', label: 'Овочі', icon: '🥦' },
-  { id: 'fruits', label: 'Фрукти', icon: '🍎' },
+  { id: 'fats', label: 'Жири', icon: '🧈' },
+  
   { id: 'grains', label: 'Крупи та бобові', icon: '🌾' },
   { id: 'pasta', label: 'Макаронні вироби', icon: '🍝' },
-  { id: 'bakery', label: 'Випічка', icon: '🥖' },
+  
   { id: 'spices', label: 'Спеції та трави', icon: '🌿' },
-  { id: 'drinks', label: 'Напої', icon: '🥤' },
+  { id: 'sauces', label: 'Соуси', icon: '🥫' },
+  
   { id: 'sweets', label: 'Солодощі', icon: '🍫' },
-  { id: 'fats', label: 'Жири', icon: '🧈' },
-  { id: 'sauces', label: 'Соуси', icon: '🥫' }
+  { id: 'drinks', label: 'Напої', icon: '🥤' },
 ]
 
 /* ===================== INVENTORY ===================== */
