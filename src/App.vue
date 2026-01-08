@@ -207,19 +207,20 @@ function toggleTag(tag){ const i = activeItem.value.tags.indexOf(tag); i!==-1?ac
 
   <!-- ITEMS -->
   <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-  <div v-for="item in inventory[activeCategory]" :key="item.name" class="bg-white rounded-2xl shadow p-3 flex flex-col items-center">
-    <button @click="openItem(item)" class="flex flex-col items-center w-full aspect-square justify-between p-3 rounded-2xl bg-white shadow-lg">
-      <div class="text-6xl flex justify-center mt-2">{{ item.icon }}</div>
-      <div class="text-center mt-2">
-        <div class="text-lg font-semibold truncate">{{ item.name }}</div>
-        <div class="text-base font-bold mt-1">{{ pretty(item) }}</div>
-      </div>
-      <div class="flex flex-wrap justify-center gap-1 mt-2 max-h-10 overflow-auto">
-        <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">{{ tag }}</span>
-      </div>
-    </button>
-    <button @click.stop="removeItem(item)" class="absolute top-2 right-2 text-red-500 text-xl bg-white rounded-full p-1 shadow">✖</button>
-  </div>
+  <div v-for="item in inventory[activeCategory]" :key="item.name" class="relative flex flex-col items-center relative">
+  <button @click="openItem(item)" class="flex flex-col items-center w-full aspect-square justify-between p-3 rounded-2xl bg-white shadow-lg">
+    <div class="text-6xl flex justify-center mt-2">{{ item.icon }}</div>
+    <div class="text-center mt-2">
+      <div class="text-lg font-semibold truncate">{{ item.name }}</div>
+      <div class="text-base font-bold mt-1">{{ pretty(item) }}</div>
+    </div>
+    <div class="flex flex-wrap justify-center gap-1 mt-2 max-h-10 overflow-auto">
+      <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">{{ tag }}</span>
+    </div>
+  </button>
+  <button @click.stop="removeItem(item)" class="absolute top-2 right-2 text-red-500 text-xl bg-white rounded-full p-1 shadow">✖</button>
+</div>
+
 </div>
 
 
