@@ -19,7 +19,6 @@ const categories = [
   { id: 'sauces', label: 'Соуси', icon: '🥫' }
 ]
 
-
 /* ===================== INVENTORY ===================== */
 const inventory = reactive({
   meat: [
@@ -142,44 +141,9 @@ const editingMode = ref('edit') // 'edit' або 'add'
 
 /* ===================== ICON LIST ===================== */
 const iconList = [
-  '🥩', // м'ясо
-  '🍗', // курка
-  '🥓', // сало/бекон
-  '🍖', // ребра
-  '🐟', // риба
-  '🧀', // сир/творог
-  '🥛', // молоко
-  '🥦', // овочі (зелені)
-  '🍎', // яблука
-  '🍓', // ягоди
-  '🌾', // крупи
-  '🍝', // макарони
-  '🍬', // солодощі
-  '🧂', // спеції/сіль/цукор
-  '🌶️', // гострі спеції
-  '🍅', // томати
-  '🧈', // масло
-  '🫒', // олія
-  '🆕', // новий продукт
-  '🥖', // хліб/борошно
-  '🍯', // мед/варення
-  '🍪', // печиво/вафлі
-  '🍋', // лимон/цитрусові
-  '🍇', // родзинки/виноград
-  '🥕', // морква
-  '🥔', // картопля
-  '🥒', // огірок
-  '🧅', // цибуля
-  '☕', // кава
-  '🍵', // чай
-  '🥚', // яйця
-  '🌿', // зелень/трави
-  '🥫', // соуси/кетчуп
-  '🫐', // ягоди дрібні (можна для квасу, смородини тощо)
-  '🥬', // листя салату/шпинат
-  '🫙', // баночки/консерви
+  '🥩','🍗','🥓','🍖','🐟','🧀','🥛','🥦','🍎','🍓','🌾','🍝','🍬','🧂','🌶️',
+  '🍅','🧈','🫒','🆕','🥖','🍯','🍪','🍋','🍇','🥕','🥔','🥒','🧅','☕','🍵','🥚','🌿','🥫','🥬','🫙'
 ]
-
 
 /* ===================== HELPERS ===================== */
 const pretty = (item) => {
@@ -193,25 +157,21 @@ const pretty = (item) => {
 function openItem(item) {
   activeItem.value = { ...item, original: item }
   displayUnit.value = item.unit
-
-  // Обмеження юнітів при редагуванні
   if (item.unit === 'g' || item.unit === 'kg') activeItem.value.units = ['g','kg']
   else if (item.unit === 'ml' || item.unit === 'l') activeItem.value.units = ['ml','l']
   else activeItem.value.units = [item.unit]
-
   inputValue.value = formatForDisplay(item.amount, item.unit)
   editingMode.value = 'edit'
 }
 
 function openAddModal() {
   if (!activeCategory.value) return alert('Оберіть категорію перед додаванням!')
-
   activeItem.value = {
     name: '',
     icon: '🆕',
     amount: 0,
     unit: 'g',
-    units: ['g','kg','ml','l','шт'], // повний список юнітів
+    units: ['g','kg','ml','l','шт'],
     tags: ['свіже']
   }
   displayUnit.value = 'g'
@@ -237,19 +197,11 @@ function toBase(value, unit) {
 
 function saveItem() {
   if (!activeItem.value.name.trim()) return alert('Вкажіть назву продукту!')
-
   activeItem.value.amount = toBase(inputValue.value, displayUnit.value)
   activeItem.value.unit = displayUnit.value
-
-  // Переконаємось, що категорія існує
   if (!inventory[activeCategory.value]) inventory[activeCategory.value] = []
-
-  if (editingMode.value === 'add') {
-    inventory[activeCategory.value].push({ ...activeItem.value })
-  } else {
-    Object.assign(activeItem.value.original, activeItem.value)
-  }
-
+  if (editingMode.value === 'add') inventory[activeCategory.value].push({ ...activeItem.value })
+  else Object.assign(activeItem.value.original, activeItem.value)
   closeModal()
 }
 
@@ -283,37 +235,38 @@ function toggleTag(tag) {
 
   <!-- ITEMS -->
   <div v-else>
-  <div class="flex justify-between mb-4 items-center">
-    <button class="text-lg font-semibold text-blue-600" @click="activeCategory = null">← Назад</button>
-    <button class="px-4 py-2 bg-green-500 text-white rounded-2xl" @click="openAddModal">Додати продукт</button>
+    <div class="flex justify-between mb-4 items-center">
+      <button class="text-lg font-semibold text-blue-600" @click="activeCategory = null">← Назад</button>
+      <button class="px-4 py-2 bg-green-500 text-white rounded-2xl" @click="openAddModal">Додати продукт</button>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div v-for="item in inventory[activeCategory]" :key="item.name" class="relative">
+        <button @click="openItem(item)" class="bg-white rounded-3xl shadow-lg aspect-square flex flex-col p-3 justify-between active:scale-95 transition overflow-hidden">
+          
+          <!-- ICON -->
+          <div class="flex justify-center items-center text-6xl mt-2">
+            {{ item.icon }}
+          </div>
+
+          <!-- NAME + AMOUNT -->
+          <div class="flex flex-col justify-center items-center text-center flex-1 overflow-hidden mt-2">
+            <div class="text-lg font-semibold truncate w-full">{{ item.name }}</div>
+            <div class="text-base font-bold mt-1">{{ pretty(item) }}</div>
+          </div>
+
+          <!-- TAGS -->
+          <div class="flex flex-wrap justify-center gap-1 mt-2 max-h-10 overflow-auto w-full">
+            <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-0.5 rounded-full text-xs truncate">{{ tag }}</span>
+          </div>
+
+        </button>
+
+        <!-- Видалення -->
+        <button @click.stop="removeItem(item)" class="absolute top-2 right-2 text-red-500 text-xl bg-white rounded-full p-1 shadow">✖</button>
+      </div>
+    </div>
   </div>
-
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-    <div v-for="item in inventory[activeCategory]" :key="item.name" class="relative">
-  <button @click="openItem(item)" class="bg-white rounded-3xl shadow-lg aspect-square flex flex-col justify-between p-3 active:scale-95 transition overflow-hidden">
-    
-    <!-- ICON -->
-    <div class="flex justify-center mt-2 text-6xl">
-      {{ item.icon }}
-    </div>
-
-    <!-- NAME + AMOUNT -->
-    <div class="flex flex-col items-center text-center mt-2 flex-1 overflow-hidden">
-      <div class="text-lg font-semibold truncate">{{ item.name }}</div>
-      <div class="text-base font-bold mt-1">{{ pretty(item) }}</div>
-    </div>
-
-    <!-- TAGS -->
-    <div class="flex flex-wrap justify-center gap-1 mt-2 max-h-10 overflow-auto">
-      <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">{{ tag }}</span>
-    </div>
-  </button>
-
-  <!-- Видалення -->
-  <button @click.stop="removeItem(item)" class="absolute top-2 right-2 text-red-500 text-xl bg-white rounded-full p-1 shadow">✖</button>
-</div>
-  </div>
-</div>
 
   <!-- MODAL / NUMPAD -->
   <div v-if="activeItem" class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center">
