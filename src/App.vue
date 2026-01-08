@@ -129,97 +129,69 @@ const inventory = reactive({
     { name: 'Соус солодкий чилі', icon: '🥫', amount: 1, unit: 'шт', units: ['шт'], tags: ['свіже'] },
     { name: 'Цитроніка', icon: '🍋', amount: 60, unit: 'ml', units: ['ml','l'], tags: ['свіже'] }
   ]
-});
-
+})
 
 /* ===================== UI STATE ===================== */
 const activeCategory = ref(null)
 const activeItem = ref(null)
 const inputValue = ref('')
 const displayUnit = ref('')
-const editingMode = ref('edit') // 'edit' або 'add'
+const editingMode = ref('edit') // 'edit' | 'add'
 
-/* ===================== ICON LIST ===================== */
+/* ===================== ICONS ===================== */
 const iconList = [
   '🥩','🍗','🥓','🍖','🐟','🧀','🥛','🥦','🍎','🍓','🌾','🍝','🍬','🧂','🌶️',
   '🍅','🧈','🫒','🆕','🥖','🍯','🍪','🍋','🍇','🥕','🥔','🥒','🧅','☕','🍵','🥚','🌿','🥫','🥬','🫙'
 ]
 
 /* ===================== HELPERS ===================== */
-const pretty = (item) => {
-  if (item.unit === 'kg') return `${(item.amount / 1000).toFixed(2)} кг`
-  if (item.unit === 'l') return `${(item.amount / 1000).toFixed(2)} л`
-  if (item.unit === 'ml') return `${item.amount} мл`
-  if (item.unit === 'g') return `${item.amount} г`
-  return `${item.amount} шт`
+const pretty = item => {
+  switch(item.unit){
+    case 'kg': return `${(item.amount/1000).toFixed(2)} кг`
+    case 'g': return `${item.amount} г`
+    case 'l': return `${(item.amount/1000).toFixed(2)} л`
+    case 'ml': return `${item.amount} мл`
+    default: return `${item.amount} шт`
+  }
 }
 
-function openItem(item) {
+const formatForDisplay = (amount, unit) => ['kg','l'].includes(unit) ? (amount/1000).toString() : amount.toString()
+const toBase = (value, unit) => {
+  const v = parseFloat(value || 0)
+  return ['kg','l'].includes(unit) ? Math.round(v*1000) : Math.round(v)
+}
+
+/* ===================== MODAL ===================== */
+function openItem(item){
   activeItem.value = { ...item, original: item }
   displayUnit.value = item.unit
-  if (item.unit === 'g' || item.unit === 'kg') activeItem.value.units = ['g','kg']
-  else if (item.unit === 'ml' || item.unit === 'l') activeItem.value.units = ['ml','l']
-  else activeItem.value.units = [item.unit]
   inputValue.value = formatForDisplay(item.amount, item.unit)
   editingMode.value = 'edit'
+  activeItem.value.units = ['g','kg','ml','l'].includes(item.unit) ? [item.unit === 'g'||item.unit==='kg'? 'g':'ml','kg' || 'l'] : [item.unit]
 }
 
-function openAddModal() {
-  if (!activeCategory.value) return alert('Оберіть категорію перед додаванням!')
-  activeItem.value = {
-    name: '',
-    icon: '🆕',
-    amount: 0,
-    unit: 'g',
-    units: ['g','kg','ml','l','шт'],
-    tags: ['свіже']
-  }
+function openAddModal(){
+  if(!activeCategory.value) return alert('Оберіть категорію!')
+  activeItem.value = { name:'', icon:'🆕', amount:0, unit:'g', units:['g','kg','ml','l','шт'], tags:['свіже'] }
   displayUnit.value = 'g'
   inputValue.value = ''
   editingMode.value = 'add'
 }
 
-function closeModal() {
-  activeItem.value = null
-  inputValue.value = ''
-}
-
-function formatForDisplay(amount, unit) {
-  if (unit === 'kg' || unit === 'l') return (amount / 1000).toString()
-  return amount.toString()
-}
-
-function toBase(value, unit) {
-  const v = parseFloat(value || 0)
-  if (unit === 'kg' || unit === 'l') return Math.round(v * 1000)
-  return Math.round(v)
-}
-
-function saveItem() {
-  if (!activeItem.value.name.trim()) return alert('Вкажіть назву продукту!')
+function closeModal(){ activeItem.value = null; inputValue.value='' }
+function saveItem(){
+  if(!activeItem.value.name.trim()) return alert('Вкажіть назву продукту!')
   activeItem.value.amount = toBase(inputValue.value, displayUnit.value)
   activeItem.value.unit = displayUnit.value
-  if (!inventory[activeCategory.value]) inventory[activeCategory.value] = []
-  if (editingMode.value === 'add') inventory[activeCategory.value].push({ ...activeItem.value })
-  else Object.assign(activeItem.value.original, activeItem.value)
+  if(!inventory[activeCategory.value]) inventory[activeCategory.value]=[]
+  editingMode.value==='add'?inventory[activeCategory.value].push({...activeItem.value}):Object.assign(activeItem.value.original, activeItem.value)
   closeModal()
 }
 
-function press(key) {
-  if (key === '⌫') inputValue.value = inputValue.value.slice(0, -1)
-  else inputValue.value += key
-}
+function press(key){ inputValue.value = key==='⌫'? inputValue.value.slice(0,-1):inputValue.value+key }
+function removeItem(item){ const idx = inventory[activeCategory.value].indexOf(item); if(idx!==-1) inventory[activeCategory.value].splice(idx,1) }
+function toggleTag(tag){ const i = activeItem.value.tags.indexOf(tag); i!==-1?activeItem.value.tags.splice(i,1):activeItem.value.tags.push(tag) }
 
-function removeItem(item) {
-  const idx = inventory[activeCategory.value].indexOf(item)
-  if (idx !== -1) inventory[activeCategory.value].splice(idx, 1)
-}
-
-function toggleTag(tag) {
-  const idx = activeItem.value.tags.indexOf(tag)
-  if (idx !== -1) activeItem.value.tags.splice(idx, 1)
-  else activeItem.value.tags.push(tag)
-}
 </script>
 
 <template>
@@ -227,7 +199,7 @@ function toggleTag(tag) {
 
   <!-- CATEGORIES -->
   <div v-if="!activeCategory" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-    <button v-for="c in categories" :key="c.id" @click="activeCategory = c.id" class="bg-white rounded-3xl shadow-lg aspect-square flex flex-col items-center justify-center active:scale-95 transition">
+    <button v-for="c in categories" :key="c.id" @click="activeCategory=c.id" class="bg-white rounded-3xl shadow-lg aspect-square flex flex-col items-center justify-center active:scale-95 transition">
       <div class="text-6xl mb-3">{{ c.icon }}</div>
       <div class="text-xl font-semibold">{{ c.label }}</div>
     </button>
@@ -236,33 +208,22 @@ function toggleTag(tag) {
   <!-- ITEMS -->
   <div v-else>
     <div class="flex justify-between mb-4 items-center">
-      <button class="text-lg font-semibold text-blue-600" @click="activeCategory = null">← Назад</button>
+      <button class="text-lg font-semibold text-blue-600" @click="activeCategory=null">← Назад</button>
       <button class="px-4 py-2 bg-green-500 text-white rounded-2xl" @click="openAddModal">Додати продукт</button>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       <div v-for="item in inventory[activeCategory]" :key="item.name" class="relative">
-        <button @click="openItem(item)" class="bg-white rounded-3xl shadow-lg aspect-square flex flex-col p-3 justify-between active:scale-95 transition overflow-hidden">
-          
-          <!-- ICON -->
-          <div class="flex justify-center items-center text-6xl mt-2">
-            {{ item.icon }}
-          </div>
-
-          <!-- NAME + AMOUNT -->
-          <div class="flex flex-col justify-center items-center text-center flex-1 overflow-hidden mt-2">
-            <div class="text-lg font-semibold truncate w-full">{{ item.name }}</div>
+        <button @click="openItem(item)" class="bg-white rounded-3xl shadow-lg aspect-square flex flex-col justify-between p-3 active:scale-95 transition overflow-hidden">
+          <div class="flex justify-center mt-2 text-6xl">{{ item.icon }}</div>
+          <div class="flex flex-col items-center text-center mt-2 flex-1 overflow-hidden">
+            <div class="text-lg font-semibold truncate">{{ item.name }}</div>
             <div class="text-base font-bold mt-1">{{ pretty(item) }}</div>
           </div>
-
-          <!-- TAGS -->
-          <div class="flex flex-wrap justify-center gap-1 mt-2 max-h-10 overflow-auto w-full">
-            <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-0.5 rounded-full text-xs truncate">{{ tag }}</span>
+          <div class="flex flex-wrap justify-center gap-1 mt-2 max-h-10 overflow-auto">
+            <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">{{ tag }}</span>
           </div>
-
         </button>
-
-        <!-- Видалення -->
         <button @click.stop="removeItem(item)" class="absolute top-2 right-2 text-red-500 text-xl bg-white rounded-full p-1 shadow">✖</button>
       </div>
     </div>
@@ -271,8 +232,6 @@ function toggleTag(tag) {
   <!-- MODAL / NUMPAD -->
   <div v-if="activeItem" class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center">
     <div class="bg-white w-full sm:w-[420px] rounded-t-3xl sm:rounded-3xl p-5">
-
-      <!-- ICON & NAME -->
       <div class="text-center mb-2">
         <select v-model="activeItem.icon" class="text-4xl text-center w-full mb-2">
           <option v-for="i in iconList" :key="i" :value="i">{{ i }}</option>
@@ -280,36 +239,24 @@ function toggleTag(tag) {
         <input v-model="activeItem.name" class="w-full border-b text-center text-xl font-semibold mb-2" placeholder="Назва продукту"/>
       </div>
 
-      <!-- AMOUNT -->
       <div class="text-center text-4xl font-bold mb-4">{{ inputValue || 0 }}</div>
       <div class="grid grid-cols-3 gap-3 mb-4">
         <button v-for="k in ['1','2','3','4','5','6','7','8','9','.','0','⌫']" :key="k" @click="press(k)" class="bg-gray-100 rounded-2xl p-6 text-2xl font-semibold active:scale-95">{{ k }}</button>
       </div>
 
-      <!-- UNIT -->
       <div class="flex gap-3 mb-4">
-        <button v-for="u in activeItem.units" :key="u" @click="displayUnit = u" :class="[
-          'flex-1 p-4 rounded-2xl text-xl font-semibold',
-          displayUnit === u ? 'bg-blue-500 text-white' : 'bg-gray-100'
-        ]">{{ u }}</button>
+        <button v-for="u in activeItem.units" :key="u" @click="displayUnit=u" :class="['flex-1 p-4 rounded-2xl text-xl font-semibold', displayUnit===u?'bg-blue-500 text-white':'bg-gray-100']">{{ u }}</button>
       </div>
 
-      <!-- TAGS -->
       <div class="flex gap-2 flex-wrap mb-4">
-        <button v-for="tag in ['свіже','заморожено','мариноване']" :key="tag" @click="toggleTag(tag)" :class="[
-          'px-3 py-1 rounded-full text-xs',
-          activeItem.tags.includes(tag) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-        ]">{{ tag }}</button>
+        <button v-for="tag in ['свіже','заморожено','мариноване']" :key="tag" @click="toggleTag(tag)" :class="['px-3 py-1 rounded-full text-xs', activeItem.tags.includes(tag)?'bg-blue-500 text-white':'bg-gray-200 text-gray-800']">{{ tag }}</button>
       </div>
 
-      <!-- ACTIONS -->
       <div class="flex gap-3">
         <button @click="closeModal" class="flex-1 p-4 rounded-2xl bg-gray-200 text-xl">Скасувати</button>
         <button @click="saveItem" class="flex-1 p-4 rounded-2xl bg-green-500 text-white text-xl font-semibold">OK</button>
       </div>
-
     </div>
   </div>
-
 </div>
 </template>
