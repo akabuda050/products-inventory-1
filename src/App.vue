@@ -206,28 +206,22 @@ function toggleTag(tag){ const i = activeItem.value.tags.indexOf(tag); i!==-1?ac
   </div>
 
   <!-- ITEMS -->
-  <div v-else>
-    <div class="flex justify-between mb-4 items-center">
-      <button class="text-lg font-semibold text-blue-600" @click="activeCategory=null">← Назад</button>
-      <button class="px-4 py-2 bg-green-500 text-white rounded-2xl" @click="openAddModal">Додати продукт</button>
-    </div>
-
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      <div v-for="item in inventory[activeCategory]" :key="item.name" class="relative">
-        <button @click="openItem(item)" class="bg-white rounded-3xl shadow-lg aspect-square flex flex-col justify-between p-3 active:scale-95 transition overflow-hidden">
-          <div class="flex justify-center mt-2 text-6xl">{{ item.icon }}</div>
-          <div class="flex flex-col items-center text-center mt-2 flex-1 overflow-hidden">
-            <div class="text-lg font-semibold truncate">{{ item.name }}</div>
-            <div class="text-base font-bold mt-1">{{ pretty(item) }}</div>
-          </div>
-          <div class="flex flex-wrap justify-center gap-1 mt-2 max-h-10 overflow-auto">
-            <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">{{ tag }}</span>
-          </div>
-        </button>
-        <button @click.stop="removeItem(item)" class="absolute top-2 right-2 text-red-500 text-xl bg-white rounded-full p-1 shadow">✖</button>
+  <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+  <div v-for="item in inventory[activeCategory]" :key="item.name" class="bg-white rounded-2xl shadow p-3 flex flex-col items-center">
+    <button @click="openItem(item)" class="flex flex-col items-center w-full aspect-square justify-between p-3 rounded-2xl bg-white shadow-lg">
+      <div class="text-6xl flex justify-center mt-2">{{ item.icon }}</div>
+      <div class="text-center mt-2">
+        <div class="text-lg font-semibold truncate">{{ item.name }}</div>
+        <div class="text-base font-bold mt-1">{{ pretty(item) }}</div>
       </div>
-    </div>
+      <div class="flex flex-wrap justify-center gap-1 mt-2 max-h-10 overflow-auto">
+        <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">{{ tag }}</span>
+      </div>
+    </button>
+    <button @click.stop="removeItem(item)" class="absolute top-2 right-2 text-red-500 text-xl bg-white rounded-full p-1 shadow">✖</button>
   </div>
+</div>
+
 
   <!-- MODAL / NUMPAD -->
   <div v-if="activeItem" class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center">
