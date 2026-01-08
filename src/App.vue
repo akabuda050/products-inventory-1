@@ -198,8 +198,8 @@ function toggleTag(tag){ const i = activeItem.value.tags.indexOf(tag); i!==-1?ac
 <div class="min-h-screen bg-gray-100 p-4">
 
   <!-- CATEGORIES -->
-  <div v-if="!activeCategory" class="grid grid-cols-2 md:grid-cols-6 gap-4">
-    <button v-for="c in categories" :key="c.id" @click="activeCategory=c.id" class="bg-white rounded-3xl shadow-lg aspect-square flex flex-col items-center justify-center active:scale-95 transition">
+  <div v-if="!activeCategory" class="grid grid-cols-3 sm:grid-cols-6 gap-4">
+    <button v-for="c in categories" :key="c.id" @click="activeCategory=c.id" class="p-5 bg-white rounded-xl shadow-lg aspect-square flex flex-col items-center justify-center active:scale-95 transition">
       <div class="text-6xl mb-3">{{ c.icon }}</div>
       <div class="text-sm font-semibold">{{ c.label }}</div>
     </button>
