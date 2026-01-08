@@ -206,7 +206,12 @@ function toggleTag(tag){ const i = activeItem.value.tags.indexOf(tag); i!==-1?ac
   </div>
 
   <!-- ITEMS -->
-  <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <div v-else>
+    <div class="flex justify-between mb-4 items-center">
+      <button class="text-lg font-semibold text-blue-600" @click="activeCategory=null">← Назад</button>
+      <button class="px-4 py-2 bg-green-500 text-white rounded-2xl" @click="openAddModal">Додати продукт</button>
+    
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
   <div v-for="item in inventory[activeCategory]" :key="item.name" class="relative flex flex-col items-center relative">
   <button @click="openItem(item)" class="flex flex-col items-center w-full aspect-square justify-between p-3 rounded-2xl bg-white shadow-lg">
     <div class="text-6xl flex justify-center mt-2">{{ item.icon }}</div>
@@ -220,6 +225,7 @@ function toggleTag(tag){ const i = activeItem.value.tags.indexOf(tag); i!==-1?ac
   </button>
   <button @click.stop="removeItem(item)" class="absolute top-2 right-2 text-red-500 text-xl bg-white rounded-full p-1 shadow">✖</button>
 </div>
+    </div>
 
 </div>
 
