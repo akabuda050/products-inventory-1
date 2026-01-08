@@ -283,25 +283,34 @@ function toggleTag(tag) {
 
   <!-- ITEMS -->
   <div v-else>
-    <div class="flex justify-between mb-4 items-center">
-      <button class="text-lg font-semibold text-blue-600" @click="activeCategory = null">← Назад</button>
-      <button class="px-4 py-2 bg-green-500 text-white rounded-2xl" @click="openAddModal">Додати продукт</button>
-    </div>
+  <div class="flex justify-between mb-4 items-center">
+    <button class="text-lg font-semibold text-blue-600" @click="activeCategory = null">← Назад</button>
+    <button class="px-4 py-2 bg-green-500 text-white rounded-2xl" @click="openAddModal">Додати продукт</button>
+  </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div v-for="item in inventory[activeCategory]" :key="item.name" class="bg-white rounded-2xl p-5 shadow flex items-center gap-4">
-        <div class="text-4xl cursor-pointer" @click="openItem(item)">{{ item.icon }}</div>
-        <div class="flex-1 cursor-pointer" @click="openItem(item)">
-          <div class="text-xl font-semibold leading-snug">{{ item.name }}</div>
-          <div class="text-base text-gray-500 flex flex-wrap gap-1">
-            <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">{{ tag }}</span>
-          </div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div v-for="item in inventory[activeCategory]" :key="item.name" class="relative">
+      <button @click="openItem(item)" class="bg-white rounded-3xl shadow-lg aspect-square flex flex-col items-center justify-between p-4 active:scale-95 transition">
+        <!-- ICON -->
+        <div class="text-6xl">{{ item.icon }}</div>
+
+        <!-- NAME -->
+        <div class="text-lg font-semibold text-center mt-2">{{ item.name }}</div>
+
+        <!-- AMOUNT -->
+        <div class="text-base font-bold mt-1">{{ pretty(item) }}</div>
+
+        <!-- TAGS -->
+        <div class="flex flex-wrap justify-center gap-1 mt-2">
+          <span v-for="tag in item.tags" :key="tag" class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">{{ tag }}</span>
         </div>
-        <div class="text-2xl font-bold whitespace-nowrap">{{ pretty(item) }}</div>
-        <button @click="removeItem(item)" class="ml-2 text-red-500 text-xl">✖</button>
-      </div>
+      </button>
+
+      <!-- Видалення (опційно) -->
+      <button @click.stop="removeItem(item)" class="absolute top-2 right-2 text-red-500 text-xl bg-white rounded-full p-1 shadow">✖</button>
     </div>
   </div>
+</div>
 
   <!-- MODAL / NUMPAD -->
   <div v-if="activeItem" class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center">
