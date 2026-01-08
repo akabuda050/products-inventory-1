@@ -211,7 +211,7 @@ function toggleTag(tag){ const i = activeItem.value.tags.indexOf(tag); i!==-1?ac
       <button class="text-lg font-semibold text-blue-600" @click="activeCategory=null">← Назад</button>
       <button class="px-4 py-2 bg-green-500 text-white rounded-2xl" @click="openAddModal">Додати продукт</button>
     </div>
-  <div class="grid grid-cols-4 md:grid-cols-6 gap-4">
+  <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
   <div v-for="item in inventory[activeCategory]" :key="item.name" class="relative flex flex-col items-center relative">
   <button @click="openItem(item)" class="flex flex-col items-center w-full justify-between p-3 rounded-2xl bg-white shadow-lg">
     <div class="text-6xl flex justify-center mt-2">{{ item.icon }}</div>
